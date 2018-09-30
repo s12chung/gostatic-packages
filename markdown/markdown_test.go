@@ -2,6 +2,7 @@ package markdown
 
 import (
 	"path"
+	"strings"
 	"testing"
 
 	logTest "github.com/sirupsen/logrus/hooks/test"
@@ -23,7 +24,7 @@ func TestMarkdown_ProcessMarkdown(t *testing.T) {
 		safeLog  bool
 	}{
 		{"doesnt_exist.md", "", false},
-		{"ProcessMarkdown.md", "", true},
+		{"ProcessMarkdown.md", `<p>Some random <a href="http://stevenchung.ca">markdown</a>.</p>`, true},
 	}
 
 	for testCaseIndex, tc := range testCases {
@@ -33,7 +34,7 @@ func TestMarkdown_ProcessMarkdown(t *testing.T) {
 		})
 
 		markdown, hook := defaultMarkdown()
-		got := markdown.ProcessMarkdown(tc.filename)
+		got := strings.TrimSpace(markdown.ProcessMarkdown(tc.filename))
 
 		if got != tc.exp {
 			t.Error(context.GotExpString("Result", got, tc.exp))
