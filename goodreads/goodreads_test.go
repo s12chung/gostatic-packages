@@ -107,7 +107,10 @@ func newServer(t *testing.T, paramChecks map[string]string) *serverSettings {
 
 		page := query["page"][0]
 		bytes := test.ReadFixture(t, fmt.Sprintf("page%v.xml", page))
-		w.Write(bytes)
+		_, err = w.Write(bytes)
+		if err != nil {
+			t.Error(err)
+		}
 	}))
 	ss.server = server
 	return ss
