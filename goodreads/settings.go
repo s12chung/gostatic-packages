@@ -1,5 +1,6 @@
 package goodreads
 
+// Settings represents the settings of the Client
 type Settings struct {
 	CachePath  string `json:"cache_path,omitempty"`
 	APIURL     string `json:"api_url,omitempty"`
@@ -14,6 +15,7 @@ func (settings *Settings) invalid() bool {
 	return settings.APIKey == "" && settings.UserID == 0
 }
 
+// DefaultSettings represnts the default Settings
 func DefaultSettings() *Settings {
 	return &Settings{
 		"./cache",
@@ -24,19 +26,4 @@ func DefaultSettings() *Settings {
 		200,
 		1000,
 	}
-}
-
-func TestSettings(cachePath, apiURL string) *Settings {
-	settings := DefaultSettings()
-	settings.APIURL = apiURL
-	settings.APIKey = "good_test"
-	settings.UserID = 1
-	settings.RateLimit = 1
-	settings.CachePath = cachePath
-	return settings
-}
-
-func InvalidateSettings(settings *Settings) {
-	settings.APIKey = ""
-	settings.UserID = 0
 }

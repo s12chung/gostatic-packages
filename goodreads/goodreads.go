@@ -33,11 +33,13 @@ func RatingMap(books []*Book) map[int]int {
 	return ratingMap
 }
 
+// Client is a "main struct", there's the client to the Goodreads API
 type Client struct {
 	Settings *Settings
 	log      logrus.FieldLogger
 }
 
+// NewClient returns a new instance of client
 func NewClient(settings *Settings, log logrus.FieldLogger) *Client {
 	return &Client{
 		settings,
@@ -95,7 +97,7 @@ func (client *Client) readBooksCache() map[string]*Book {
 		return nil
 	}
 
-	bytes, err := ioutil.ReadFile(booksCachePath) // #nosec G304
+	bytes, err := ioutil.ReadFile(booksCachePath)
 	if err != nil {
 		client.log.Warnf("error reading %v - %v", booksCachePath, err)
 		return nil
@@ -218,7 +220,7 @@ func (client *Client) requestGetBooks(userID int, initialLoad bool, page int) (r
 
 	url := fmt.Sprintf("%v/review/list?%v", client.Settings.APIURL, utils.ToSimpleQuery(queryParams))
 	client.log.Infof("GET %v", url)
-	return http.Get(url) // #nosec G107
+	return http.Get(url)
 }
 
 func (client *Client) paginateGet(request func(page int) (resp *http.Response, err error), callback func(bytes []byte) (bool, error)) error {
@@ -255,12 +257,15 @@ func (client *Client) paginateGet(request func(page int) (resp *http.Response, e
 	return nil
 }
 
+// Date is the data representation given by the Goodreads API, helps with conversions
 type Date time.Time
 
+// Equal returns true if the dates are equal
 func (date Date) Equal(u Date) bool {
 	return time.Time(date).Equal(time.Time(u))
 }
 
+// UnmarshalXML parses the xml into the Date
 func (date *Date) UnmarshalXML(decoder *xml.Decoder, startElement xml.StartElement) error {
 	var stringValue string
 
@@ -278,6 +283,7 @@ func (date *Date) UnmarshalXML(decoder *xml.Decoder, startElement xml.StartEleme
 	return nil
 }
 
+// Book represents a Goodreads book
 type Book struct {
 	XMLName xml.Name `xml:"review" json:"-"`
 	ID      string   `xml:"id" json:"id"`

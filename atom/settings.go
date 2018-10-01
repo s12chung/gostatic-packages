@@ -5,6 +5,16 @@ import (
 	"strings"
 )
 
+// Settings presents the settings of the Atom feed
+type Settings struct {
+	AuthorName string `json:"author_name,omitempty"`
+	AuthorURI  string `json:"author_uri,omitempty"`
+
+	Host string `json:"host,omitempty"`
+	SSL  bool   `json:"ssl,omitempty"`
+}
+
+// DefaultSettings returns the default settings
 func DefaultSettings() *Settings {
 	return &Settings{
 		"Your Name",
@@ -14,33 +24,28 @@ func DefaultSettings() *Settings {
 	}
 }
 
-type Settings struct {
-	AuthorName string `json:"author_name,omitempty"`
-	AuthorURI  string `json:"author_uri,omitempty"`
-
-	Host string `json:"host,omitempty"`
-	SSL  bool   `json:"ssl,omitempty"`
-}
-
-func (domainSettings *Settings) AuthorURIDefaulted() string {
-	if domainSettings.AuthorURI == "" {
-		return domainSettings.URL()
+// AuthorURIDefaulted returns a defaulted AuthorURI
+func (settings *Settings) AuthorURIDefaulted() string {
+	if settings.AuthorURI == "" {
+		return settings.URL()
 	}
-	return domainSettings.AuthorURI
+	return settings.AuthorURI
 }
 
-func (domainSettings *Settings) URL() string {
+// URL returns the home page full URL of your site, including host, protocol, etc.
+func (settings *Settings) URL() string {
 	ssl := ""
-	if domainSettings.SSL {
+	if settings.SSL {
 		ssl = "s"
 	}
-	return fmt.Sprintf("http%v://%v", ssl, domainSettings.Host)
+	return fmt.Sprintf("http%v://%v", ssl, settings.Host)
 }
 
-func (domainSettings *Settings) FullURLFor(url string) string {
+// FullURLFor gives the full URL for the given URL
+func (settings *Settings) FullURLFor(url string) string {
 	url = strings.Trim(url, "/")
 	if url == "" {
-		return domainSettings.URL()
+		return settings.URL()
 	}
-	return strings.Join([]string{domainSettings.URL(), url}, "/")
+	return strings.Join([]string{settings.URL(), url}, "/")
 }

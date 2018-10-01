@@ -23,12 +23,24 @@ import (
 func defaultClient(t *testing.T, apiURL string) (*Client, *logTest.Hook, func()) {
 	log, hook := logTest.NewNullLogger()
 	newCachePath, clean := test.SandboxDir(t, DefaultSettings().CachePath)
-	settings := TestSettings(newCachePath, apiURL)
+	settings := testSettings(newCachePath, apiURL)
 	return NewClient(settings, log), hook, clean
 }
 
+func testSettings(cachePath, apiURL string) *Settings {
+	settings := DefaultSettings()
+	settings.APIURL = apiURL
+	settings.APIKey = "good_test"
+	settings.UserID = 1
+	settings.RateLimit = 1
+	settings.CachePath = cachePath
+	return settings
+}
+
 func invalidateSettings(client *Client) {
-	InvalidateSettings(client.Settings)
+	settings := client.Settings
+	settings.APIKey = ""
+	settings.UserID = 0
 }
 
 type serverSettings struct {

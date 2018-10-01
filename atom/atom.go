@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+// Feed represents the entire Atom feed
 type Feed struct {
 	XMLName xml.Name `xml:"feed"`
 
@@ -27,6 +28,7 @@ type Feed struct {
 	Entries []*Entry `xml:"entry"`
 }
 
+// Marhshall returns the Atom xml data of the feed
 func (feed *Feed) Marhshall() ([]byte, error) {
 	bytes, err := xml.MarshalIndent(&feed, "", "  ")
 	if err != nil {
@@ -35,6 +37,7 @@ func (feed *Feed) Marhshall() ([]byte, error) {
 	return append([]byte(xml.Header), bytes...), nil
 }
 
+// Entry represents an entry in the Atom feed
 type Entry struct {
 	XMLName xml.Name `xml:"entry"`
 
@@ -50,6 +53,7 @@ type Entry struct {
 	Published time.Time `xml:"published"`
 }
 
+// Author represents an author in the Atom feed
 type Author struct {
 	XMLName xml.Name `xml:"author"`
 
@@ -57,6 +61,7 @@ type Author struct {
 	URI  string `xml:"uri,omitempty"`
 }
 
+// EntryContent represents the content of a Entry in the Atom feed
 type EntryContent struct {
 	XMLName xml.Name `xml:"content"`
 
@@ -64,6 +69,7 @@ type EntryContent struct {
 	Type    string `xml:"type,attr,omitempty"`
 }
 
+// Link represents a link in the Atom feed
 type Link struct {
 	XMLName xml.Name `xml:"link"`
 
@@ -72,22 +78,27 @@ type Link struct {
 	Href string `xml:"href,attr"`
 }
 
+// Renderer is a "main struct", which generates a Feed
 type Renderer struct {
 	Settings *Settings
 }
 
+// NewRenderer returns a new instance of Renderer
 func NewRenderer(settings *Settings) *Renderer {
 	return &Renderer{settings}
 }
 
+// Author returns the Author of the feed
 func (a *Renderer) Author() *Author {
 	return &Author{Name: a.Settings.AuthorName, URI: a.Settings.AuthorURIDefaulted()}
 }
 
+// AlternateLink returns the HTML page variation of the feed
 func (a *Renderer) AlternateLink(url string) *Link {
 	return &Link{Rel: "alternate", Type: "text/html", Href: a.Settings.FullURLFor(url)}
 }
 
+// NewFeed returns a new Feed, with lots of defaults set
 func (a *Renderer) NewFeed(feedName string, lastUpdated time.Time, selfURL, iconURL string) *Feed {
 	return &Feed{
 		XMLLang: "en-US",

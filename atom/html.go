@@ -8,6 +8,7 @@ import (
 // EntryLimit is the recommended entry limit for the Atom feed
 const EntryLimit = 100
 
+// HTMLEntry is an entry for an HTML page
 type HTMLEntry struct {
 	ID          string
 	Title       string
@@ -17,6 +18,7 @@ type HTMLEntry struct {
 	Published   time.Time
 }
 
+// ToEntry converts the HTMLEntry to an atom Entry
 func (htmlEntry *HTMLEntry) ToEntry(a *Renderer) *Entry {
 	return &Entry{
 		ID:      strings.Join([]string{a.Settings.Host, htmlEntry.ID, htmlEntry.Published.Format("2006-01-02")}, ":"),
@@ -32,20 +34,24 @@ func (htmlEntry *HTMLEntry) ToEntry(a *Renderer) *Entry {
 	}
 }
 
+// HTMLRenderer is a "main struct", which generates a Feed. It builds on top of Renderer.
 type HTMLRenderer struct {
 	Settings *Settings
 }
 
+// NewHTMLRenderer returns a new instance of HTMLRenderer
 func NewHTMLRenderer(settings *Settings) *HTMLRenderer {
 	return &HTMLRenderer{settings}
 }
 
+// Render  the Atom xml data a generated feed
 func (renderer *HTMLRenderer) Render(feedName, selfURL, logoURL string, htmlEntries []*HTMLEntry) ([]byte, error) {
 	atomRenderer := NewRenderer(renderer.Settings)
 	feed := HTMLEntriesToFeed(atomRenderer, feedName, selfURL, logoURL, htmlEntries)
 	return feed.Marhshall()
 }
 
+// HTMLEntriesToFeed converts []HTMLEntry to a Feed, with lots of defaults set
 func HTMLEntriesToFeed(atomRenderer *Renderer, feedName, selfURL, logoURL string, htmlEntries []*HTMLEntry) *Feed {
 	entries := make([]*Entry, len(htmlEntries))
 	for i, htmlEntry := range htmlEntries {

@@ -5,6 +5,7 @@ package robots
 
 import "strings"
 
+// EverythingUserAgent is the string to target all a user agents
 const EverythingUserAgent = "*"
 
 // ToFileString returns the robots.txt representation of the UserAgents
@@ -22,6 +23,7 @@ type UserAgent struct {
 	paths []string
 }
 
+// NewUserAgent returns a new instance of UserAgent
 func NewUserAgent(name string, paths []string) *UserAgent {
 	return &UserAgent{name, paths}
 }
